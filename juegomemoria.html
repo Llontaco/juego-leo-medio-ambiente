@@ -1,0 +1,208 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<!--Este juego fue modificado del repository de MMarioB/JuegoMemoria obtenido en GitHub -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>JUEGO MEMORIA</title>
+
+
+    <style>
+        body {
+            background-color:rgb(199, 247, 123);
+            color:rgb(22, 21, 21);
+            font-family: 'Open Sans', fantasy;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        div#tablero {
+            background: #80a9f7;
+            border: rgb(245, 102, 102) 10px solid;
+            width: 850px;
+            height: 540px;
+            padding: 24px;
+            margin: 2em auto;
+        }
+
+        div#tablero>div {
+            background-color: #EEE;
+            background-image: url(img/logo.png);
+            background-size: cover;
+            border: #000 1px solid;
+            width: 75px;
+            height: 75px;
+            float: left;
+            margin: 10px;
+            padding: 20px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+        }
+    </style>
+
+    <script>
+        var arrayOpciones = ['NO RECICLAR','NO RECICLAR',
+        'NO REUTILIZAR','NO REUTILIZAR',
+        'CONTAMINACION MARINA','CONTAMINACION MARINA',
+        'POCA EDUCACION AMBIENTAL','POCA EDUCACION AMBIENTAL',
+        'AGUA SUCIA','AGUA SUCIA',
+        'POLUCION','POLUCION',
+        'PLASTICOS','PLASTICOS',
+        'CONTAMINACION','CONTAMINACION',
+        'CAMBIO CLIMATICO','CAMBIO CLIMATICO',
+        'DEFORESTACION','DEFORESTACION',
+        'POCA FAUNA','POCA FAUNA',
+        'DEGRADACION','DEGRADACION'];
+
+        // Asocia cada opción con una imagen de internet
+        var imagenesOpciones = {
+            'NO RECICLAR': './reciclaje.png',
+            'NO REUTILIZAR': './reutilizar2.png',
+            'CONTAMINACION MARINA': './oceanos.jpg',
+            'POCA EDUCACION AMBIENTAL': 'https://cdn-icons-png.flaticon.com/512/2913/2913466.png',
+            'AGUA SUCIA': 'https://cdn-icons-png.flaticon.com/512/728/728093.png',
+            'POLUCION': 'https://cdn-icons-png.flaticon.com/512/728/728091.png',
+            'PLASTICOS': 'plasticos.png',
+            'CONTAMINACION': 'contaminacion.png',
+            'CAMBIO CLIMATICO': 'cambio-climatico.png',
+            'DEFORESTACION': 'arbol.png',
+            'POCA FAUNA': 'https://cdn-icons-png.flaticon.com/512/2913/2913469.png',
+            'DEGRADACION': 'suelos.png'
+        };
+        var valoresCartas = [];
+        var idCartas = [];
+        var cartasAdivinadas = 0;
+
+        // Método Fisher-Yates para mezclar un array
+        Array.prototype.mezclar = function () {
+            var i = this.length;
+            var indiceAleatorio;
+            var valorTemporal;
+
+            while (--i > 0) {
+                indiceAleatorio = Math.floor(Math.random() * (i + 1));
+                valorTemporal = this[indiceAleatorio];
+                this[indiceAleatorio] = this[i];
+                this[i] = valorTemporal;
+            };
+        };
+
+        // Función para crear un nuevo tablero
+        function nuevoTablero() {
+            cartasAdivinadas = 0;
+            var codigoHtml = '';
+            arrayOpciones.mezclar();
+
+            for (var i = 0; i < arrayOpciones.length; i++) {
+                codigoHtml += '<div id="carta_' + i + '" onclick="girarCarta(this,\'' + arrayOpciones[i] + '\')"></div>';
+            }
+
+            document.getElementById('tablero').innerHTML = codigoHtml;
+        };
+
+        // Funcion del Juego!
+        function girarCarta(carta, val) {
+            if (carta.innerHTML == "" && valoresCartas.length < 2) {
+                carta.style.background = '#FFF';
+                // Mostrar imagen en vez de texto
+                carta.innerHTML = '<img src="' + imagenesOpciones[val] + '" alt="' + val + '" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">';
+                // Código a ejecutar al dar vuelta la primer carta
+                if (valoresCartas.length === 0) {
+                    valoresCartas.push(val);
+                    idCartas.push(carta.id);
+                    // Código a ejecutar al dar vuelta la segunda carta
+                } else if (valoresCartas.length === 1) {
+                    valoresCartas.push(val);
+                    idCartas.push(carta.id);
+
+                    // Comprobamos si las cartas son iguales
+                    if (valoresCartas[0] === valoresCartas[1]) {
+                        cartasAdivinadas += 2;
+                        // Mostrar popup breve con el nombre de la coincidencia
+                        mostrarPopup('¡Encontraste ' + val.toLowerCase() + '!');
+                        // Limpiamos las variables (arrays)
+                        valoresCartas = [];
+                        idCartas = []
+
+                        // Comprobamos si terminamos el juego
+                        if (cartasAdivinadas === arrayOpciones.length) {
+                            alert("Felicitaciones, ahora que sabes los principales problemas a cuidar el Medio Ambiente!");
+                            document.getElementById('tablero').innerHTML = "";
+                            nuevoTablero();
+                        }
+                    } else {
+                        function ocultarCarta() {
+                            // Girar la carta y volver a mostrar la imagen de logo
+                            var carta_1 = document.getElementById(idCartas[0]);
+                            var carta_2 = document.getElementById(idCartas[1]);
+
+                            // Añadimos estilos para ocultar la carta 1
+                            carta_1.style.backgroundColor = "#EEE"
+                            carta_1.style.backgroundImage = "url(img/logo.png)";
+                            carta_1.style.backgroundSize = "cover";
+                            carta_1.innerHTML = "";
+
+                            // Añadimos estilos para ocultar la carta 2
+                            carta_2.style.backgroundColor = "#EEE"
+                            carta_2.style.backgroundImage = "url(img/logo.png)";
+                            carta_2.style.backgroundSize = "cover";
+                            carta_2.innerHTML = "";
+
+                            // Limpiamos las variables (arrays)
+                            valoresCartas = [];
+                            idCartas = []
+                        }
+                        setTimeout(ocultarCarta, 700);
+                    }
+                }
+            }
+// Popup breve para coincidencias
+function mostrarPopup(mensaje) {
+    var popup = document.createElement('div');
+    popup.textContent = mensaje;
+    popup.style.position = 'fixed';
+    popup.style.top = '20px';
+    popup.style.left = '50%';
+    popup.style.transform = 'translateX(-50%)';
+    popup.style.background = 'rgba(80,169,247,0.95)';
+    popup.style.color = '#222';
+    popup.style.padding = '10px 24px';
+    popup.style.borderRadius = '10px';
+    popup.style.fontSize = '1.2em';
+    popup.style.zIndex = '9999';
+    popup.style.boxShadow = '0 2px 8px #ccc';
+    document.body.appendChild(popup);
+    setTimeout(function() {
+        popup.remove();
+    }, 1200);
+}
+        };
+
+    </script>
+</head>
+
+<body>
+    <div class="content">
+        <h1>JUEGO MEMORIA DEL MEDIO AMBIENTE</h1>
+
+        <div id="tablero"></div>
+        <hr>
+         
+
+        </div>
+    </div>
+
+    <script>nuevoTablero();</script>
+
+    <center>
+    <a href="Index.html".html"><h1>INICIO</h1></a>
+     </center>
+</body>
+
+</html>
